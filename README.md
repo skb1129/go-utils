@@ -11,6 +11,7 @@ A collection of Go utilities for building robust and scalable applications with 
 - **Middlewares:**
   - `GinLogger`: Structured request logging.
   - `GinRecovery`: Panic recovery with error reporting.
+  - `CorsMiddleware`: Configurable Cross-Origin Resource Sharing.
   - `Auth0Middleware`: JWT validation and scope checking.
   - `RateLimiter`: Redis-based rate limiting.
   - `ParseUserAgent`: User-agent parsing.
@@ -96,6 +97,9 @@ r.Use(middlewares.GinRecovery())
 // Auth0 Protection
 r.GET("/secure", middlewares.Auth0Middleware("read:data"), handler)
 
+// CORS
+r.Use(middlewares.CorsMiddleware())
+
 // Rate Limiting
 r.Use(middlewares.RateLimiter(cacheClient, "rate_limit:%s"))
 ```
@@ -126,6 +130,14 @@ func Handler(c *gin.Context) {
 
 - `ENV_FILE`: If set to `prod`, the library looks for `./env.prod.json`.
 - `CONFIG`: If `ENV_FILE` is not set, it reads the full JSON configuration from this variable.
+
+### CORS Configuration
+
+The `CorsMiddleware` expects the following configuration:
+
+- `cors.origins`: A slice of allowed origins.
+- `cors.headers`: A slice of allowed headers.
+- `environment`: If not set to `prod`, `Access-Control-Allow-Origin` will reflect the request's origin even if not in the allowed list.
 
 ## License
 

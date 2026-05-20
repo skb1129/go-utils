@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
-	"strings"
 	"time"
 
 	"github.com/auth0/go-jwt-middleware/v3"
@@ -20,19 +19,28 @@ import (
 
 // CustomClaims contains custom claims from the Auth0 token.
 type CustomClaims struct {
-	permission string
-	Scope      string `json:"scope"`
+	permission  string
+	Permissions []string `json:"permissions"`
+	Roles       []string `json:"app:roles"`
 }
 
-// Validate checks if the required scope exists in the claims.
+// Validate checks if the user has the required permission or is an ADMIN.
 func (c *CustomClaims) Validate(ctx context.Context) error {
+	// If the user has the ADMIN role, they have complete access.
+	for _, role := range c.Roles {
+		if role == "ADMIN" {
+			return nil
+		}
+	}
+
+	// If no specific permission is required, access is granted.
 	if c.permission == "" {
 		return nil
 	}
 
-	scopes := strings.Split(c.Scope, " ")
-	for _, s := range scopes {
-		if s == c.permission {
+	// Check if the required permission is in the user's permissions.
+	for _, p := range c.Permissions {
+		if p == c.permission {
 			return nil
 		}
 	}
@@ -95,12 +103,12 @@ func Auth0Middleware(permission string) gin.HandlerFunc {
 		customClaims := validatedClaims.CustomClaims.(*CustomClaims)
 
 		// Store user ID and claims in Gin context.
-		c.Set("userId", validatedClaims.RegisteredClaims.Subject)
-		c.Set("claims", customClaims)
+		c.Set("userID", validatedClaims.RegisteredClaims.Subject)
+		c.Set("userClaims", customClaims)
 
 		// Also update request context so it's available in c.Request.Context().
-		ctx := context.WithValue(c.Request.Context(), "userId", validatedClaims.RegisteredClaims.Subject)
-		ctx = context.WithValue(ctx, "claims", customClaims)
+		ctx := context.WithValue(c.Request.Context(), "userID", validatedClaims.RegisteredClaims.Subject)
+		ctx = context.WithValue(ctx, "userClaims", customClaims)
 		c.Request = c.Request.WithContext(ctx)
 
 		c.Next()

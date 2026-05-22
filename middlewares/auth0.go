@@ -63,7 +63,7 @@ func Auth0Middleware(permission string) gin.HandlerFunc {
 		logger.Fatal("Failed to parse Auth0 domain", zap.Error(err))
 	}
 
-	provider, err := jwks.NewCachingProvider(issuerURL, 5*time.Minute)
+	provider, err := jwks.NewCachingProvider(jwks.WithIssuerURL(issuerURL), jwks.WithCacheTTL(5*time.Minute))
 	if err != nil {
 		logger.Fatal("Failed to set up the JWKS provider", zap.Error(err))
 	}

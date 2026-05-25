@@ -101,28 +101,25 @@ func Auth0Middleware(permission string) gin.HandlerFunc {
 
 		validatedClaims := claims.(*validator.ValidatedClaims)
 		customClaims := validatedClaims.CustomClaims.(*CustomClaims)
+		isAdmin := false
+		for _, role := range customClaims.Roles {
+			if role == "ADMIN" {
+				isAdmin = true
+				break
+			}
+		}
 
 		// Store user ID and claims in Gin context.
 		c.Set("userID", validatedClaims.RegisteredClaims.Subject)
 		c.Set("userClaims", customClaims)
+		c.Set("isAdmin", isAdmin)
 
 		// Also update request context so it's available in c.Request.Context().
 		ctx := context.WithValue(c.Request.Context(), "userID", validatedClaims.RegisteredClaims.Subject)
 		ctx = context.WithValue(ctx, "userClaims", customClaims)
+		ctx = context.WithValue(ctx, "isAdmin", isAdmin)
 		c.Request = c.Request.WithContext(ctx)
 
 		c.Next()
 	}
-}
-
-func IsAdmin(c *gin.Context) bool {
-	if userClaims, ok := c.Get("userClaims"); ok {
-		customClaims := userClaims.(*CustomClaims)
-		for _, role := range customClaims.Roles {
-			if role == "ADMIN" {
-				return true
-			}
-		}
-	}
-	return false
 }

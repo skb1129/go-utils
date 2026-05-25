@@ -34,6 +34,10 @@ func NewStorage() *Storage {
 	return &Storage{c: client}
 }
 
+func (s *Storage) Close() error {
+	return s.c.Close()
+}
+
 func (s *Storage) GetSignedUploadURL(bucket, fileName, contentType string) (string, error) {
 	opts := &storage.SignedURLOptions{
 		Scheme:      storage.SigningSchemeV4,

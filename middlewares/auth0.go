@@ -114,3 +114,15 @@ func Auth0Middleware(permission string) gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+func IsAdmin(c *gin.Context) bool {
+	if userClaims, ok := c.Get("userClaims"); ok {
+		customClaims := userClaims.(*CustomClaims)
+		for _, role := range customClaims.Roles {
+			if role == "ADMIN" {
+				return true
+			}
+		}
+	}
+	return false
+}

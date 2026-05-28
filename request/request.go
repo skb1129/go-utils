@@ -7,7 +7,7 @@ import (
 )
 
 func SendServiceError(c *gin.Context, err *ServiceError) {
-	c.JSON(err.HttpStatus, gin.H{
+	c.AbortWithStatusJSON(err.HttpStatus, gin.H{
 		"status":  "error",
 		"error":   err.ErrorCode,
 		"message": err.Message,

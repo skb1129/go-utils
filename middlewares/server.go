@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"net"
+	"net/http"
 	"net/http/httputil"
 	"os"
 	"runtime/debug"
@@ -56,8 +57,7 @@ func GinRecovery() gin.HandlerFunc {
 					logger.Sugar().Error(c.Request.URL.Path, zap.Any("error", err))
 					logger.Sugar().Error(string(httpRequest))
 					// If the connection is dead, we can't write a status to it.
-					c.Error(err.(error))
-					c.Abort()
+					c.AbortWithError(http.StatusInternalServerError, err.(error))
 					return
 				}
 				logger.Sugar().Error(err)

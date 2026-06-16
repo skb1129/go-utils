@@ -9,7 +9,7 @@ type ServiceError struct {
 	HttpStatus int
 	Message    string
 	ErrorCode  ErrorCode
-	Data       interface{}
+	Data       any
 }
 
 func CreateBadRequestError(err error, message string) *ServiceError {
@@ -76,7 +76,7 @@ func CreateVerificationError(err error, message string) *ServiceError {
 	return &sErr
 }
 
-func CreateMFAError(err error, data interface{}) *ServiceError {
+func CreateMFAError(err error, data any) *ServiceError {
 	sErr := ServiceError{}
 	statusCode := http.StatusPreconditionRequired
 	errorCode := MFARequiredError
@@ -84,7 +84,7 @@ func CreateMFAError(err error, data interface{}) *ServiceError {
 	return &sErr
 }
 
-func (e *ServiceError) generateCustomError(statusCode int, errorCode ErrorCode, message string, err error, data interface{}) {
+func (e *ServiceError) generateCustomError(statusCode int, errorCode ErrorCode, message string, err error, data any) {
 	e.HttpStatus = statusCode
 	if e.error != nil && e.error.Error() != "" {
 		e.Message = e.Error()

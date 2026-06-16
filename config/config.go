@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func Get(key string) interface{} {
+func Get(key string) any {
 	return viper.Get(key)
 }
 
@@ -32,7 +32,7 @@ func GetFloat64(key string) float64 {
 	return viper.GetFloat64(key)
 }
 
-func GetMap(key string) map[string]interface{} {
+func GetMap(key string) map[string]any {
 	return viper.GetStringMap(key)
 }
 
@@ -52,7 +52,7 @@ func Init() {
 		if jsonConfig == "" {
 			panic(fmt.Errorf("environment variable %s not set", envVar))
 		}
-		var configMap map[string]interface{}
+		var configMap map[string]any
 		if err := json.Unmarshal([]byte(jsonConfig), &configMap); err != nil {
 			panic(fmt.Errorf("failed to unmarshal JSON from environment variable: %w", err))
 		}

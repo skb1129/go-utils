@@ -44,7 +44,7 @@ func (cache *Cache) Close() error {
 	return cache.r.Close()
 }
 
-func (cache *Cache) SetJSON(ctx context.Context, key string, value interface{}, expiration time.Duration) error {
+func (cache *Cache) SetJSON(ctx context.Context, key string, value any, expiration time.Duration) error {
 	logger.Debug("SETTING IN REDIS", zap.String("key", key), zap.Any("value", value))
 	bytes, err := json.Marshal(value)
 	if err != nil {
@@ -87,7 +87,7 @@ func (cache *Cache) Get(ctx context.Context, key string) (string, error) {
 	return result, nil
 }
 
-func (cache *Cache) GetJSON(ctx context.Context, key string, value interface{}) error {
+func (cache *Cache) GetJSON(ctx context.Context, key string, value any) error {
 	logger.Debug("GETTING FROM REDIS", zap.String("key", key))
 	result := cache.r.Get(ctx, key)
 	storedBytes, err := result.Bytes()
@@ -122,7 +122,7 @@ func (cache *Cache) HGet(ctx context.Context, key, field string) (string, error)
 	return result, nil
 }
 
-func (cache *Cache) HSet(ctx context.Context, key, field string, value interface{}) error {
+func (cache *Cache) HSet(ctx context.Context, key, field string, value any) error {
 	logger.Debug("SETTING HASH IN REDIS", zap.String("key", key), zap.String("field", field), zap.Any("value", value))
 	result := cache.r.HSet(ctx, key, field, value)
 	return result.Err()
@@ -155,12 +155,12 @@ func (cache *Cache) HKeys(ctx context.Context, key string) (*[]string, error) {
 	return &result, nil
 }
 
-func (cache *Cache) RPush(ctx context.Context, key string, values ...interface{}) (int64, error) {
+func (cache *Cache) RPush(ctx context.Context, key string, values ...any) (int64, error) {
 	logger.Debug("RPUSH IN REDIS", zap.String("key", key), zap.Any("values", values))
 	return cache.r.RPush(ctx, key, values...).Result()
 }
 
-func (cache *Cache) LPush(ctx context.Context, key string, values ...interface{}) (int64, error) {
+func (cache *Cache) LPush(ctx context.Context, key string, values ...any) (int64, error) {
 	logger.Debug("LPUSH IN REDIS", zap.String("key", key), zap.Any("values", values))
 	return cache.r.LPush(ctx, key, values...).Result()
 }
@@ -195,12 +195,12 @@ func (cache *Cache) LRange(ctx context.Context, key string, start, stop int64) (
 	return &result, nil
 }
 
-func (cache *Cache) SAdd(ctx context.Context, key string, members ...interface{}) (int64, error) {
+func (cache *Cache) SAdd(ctx context.Context, key string, members ...any) (int64, error) {
 	logger.Debug("SADD IN REDIS", zap.String("key", key), zap.Any("members", members))
 	return cache.r.SAdd(ctx, key, members...).Result()
 }
 
-func (cache *Cache) SRem(ctx context.Context, key string, members ...interface{}) (int64, error) {
+func (cache *Cache) SRem(ctx context.Context, key string, members ...any) (int64, error) {
 	logger.Debug("SREM IN REDIS", zap.String("key", key), zap.Any("members", members))
 	return cache.r.SRem(ctx, key, members...).Result()
 }
@@ -217,7 +217,7 @@ func (cache *Cache) SMembers(ctx context.Context, key string) (*[]string, error)
 	return &result, nil
 }
 
-func (cache *Cache) SIsMember(ctx context.Context, key string, member interface{}) (bool, error) {
+func (cache *Cache) SIsMember(ctx context.Context, key string, member any) (bool, error) {
 	logger.Debug("SISMEMBER IN REDIS", zap.String("key", key), zap.Any("member", member))
 	return cache.r.SIsMember(ctx, key, member).Result()
 }

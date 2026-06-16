@@ -15,7 +15,7 @@ func SendServiceError(c *gin.Context, err *ServiceError) {
 	})
 }
 
-func SendSuccessResponse(c *gin.Context, res interface{}) {
+func SendSuccessResponse(c *gin.Context, res any) {
 	c.JSON(http.StatusOK, gin.H{
 		"status": "success",
 		"data":   res,

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -22,10 +23,10 @@ func formatValidateErrors(validationErrors *validator.ValidationErrors) string {
 	return errors.Join(errRes...).Error()
 }
 
-func ValidateRequest(c *gin.Context, req interface{}) *ServiceError {
-	err := c.ShouldBindJSON(req)
+func ValidateRequest(c *gin.Context, req any, b binding.Binding) *ServiceError {
+	err := c.ShouldBindWith(req, b)
 	if err != nil {
-		return CreateBadRequestError(err, "Invalid Request Body")
+		return CreateBadRequestError(err, "Invalid Request")
 	}
 	if err = validate.Struct(req); err != nil {
 		var validationErrors validator.ValidationErrors

@@ -65,8 +65,12 @@ func (s *Storage) GetSignedDownloadURL(bucket, fileName string) (string, error) 
 	return url, nil
 }
 
+func (s *Storage) UploadWriter(ctx context.Context, bucket, fileName string) *storage.Writer {
+	return s.c.Bucket(bucket).Object(fileName).NewWriter(ctx)
+}
+
 func (s *Storage) UploadFile(ctx context.Context, bucket, fileName string, reader io.Reader) error {
-	wc := s.c.Bucket(bucket).Object(fileName).NewWriter(ctx)
+	wc := s.UploadWriter(ctx, bucket, fileName)
 	if _, err := io.Copy(wc, reader); err != nil {
 		wc.Close()
 		return err
@@ -74,8 +78,12 @@ func (s *Storage) UploadFile(ctx context.Context, bucket, fileName string, reade
 	return wc.Close()
 }
 
+func (s *Storage) DownloadReader(ctx context.Context, bucket, fileName string) (*storage.Reader, error) {
+	return s.c.Bucket(bucket).Object(fileName).NewReader(ctx)
+}
+
 func (s *Storage) DownloadFile(ctx context.Context, bucket, fileName string) ([]byte, error) {
-	rc, err := s.c.Bucket(bucket).Object(fileName).NewReader(ctx)
+	rc, err := s.DownloadReader(ctx, bucket, fileName)
 	if err != nil {
 		return nil, err
 	}

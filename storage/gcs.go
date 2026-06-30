@@ -19,7 +19,6 @@ type Storage struct {
 
 func NewStorage() *Storage {
 	logger := logs.GetLogger()
-
 	serviceAccount := config.GetMap("gcp.credentials")
 	credentialsJSON, err := json.Marshal(serviceAccount)
 	if err != nil {
@@ -30,7 +29,6 @@ func NewStorage() *Storage {
 	if err != nil {
 		logger.Fatal("Failed to initialize GCS client", zap.Error(err))
 	}
-
 	return &Storage{c: client}
 }
 

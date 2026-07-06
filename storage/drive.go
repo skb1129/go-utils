@@ -42,7 +42,7 @@ func (d *Drive) CreateFolder(ctx context.Context, name string, parentID string) 
 	if parentID != "" {
 		folder.Parents = []string{parentID}
 	}
-	f, err := d.c.Files.Create(folder).Context(ctx).Do()
+	f, err := d.c.Files.Create(folder).SupportsAllDrives(true).Context(ctx).Do()
 	if err != nil {
 		return "", err
 	}
@@ -51,7 +51,7 @@ func (d *Drive) CreateFolder(ctx context.Context, name string, parentID string) 
 
 func (d *Drive) MakePublicReader(ctx context.Context, fileID string) error {
 	permission := &drive.Permission{Type: "anyone", Role: "reader"}
-	_, err := d.c.Permissions.Create(fileID, permission).Context(ctx).Do()
+	_, err := d.c.Permissions.Create(fileID, permission).SupportsAllDrives(true).Context(ctx).Do()
 	return err
 }
 
@@ -60,7 +60,7 @@ func (d *Drive) UploadFile(ctx context.Context, name string, parentID string, da
 	if parentID != "" {
 		file.Parents = []string{parentID}
 	}
-	f, err := d.c.Files.Create(file).Media(data).Context(ctx).Do()
+	f, err := d.c.Files.Create(file).SupportsAllDrives(true).Media(data).Context(ctx).Do()
 	if err != nil {
 		return "", err
 	}
@@ -72,7 +72,7 @@ func (d *Drive) FindFolderByName(ctx context.Context, name string, parentID stri
 	if parentID != "" {
 		query += fmt.Sprintf(" and '%s' in parents", parentID)
 	}
-	r, err := d.c.Files.List().Q(query).Fields("files(id)").Context(ctx).Do()
+	r, err := d.c.Files.List().Q(query).SupportsAllDrives(true).IncludeItemsFromAllDrives(true).Fields("files(id)").Context(ctx).Do()
 	if err != nil {
 		return "", err
 	}

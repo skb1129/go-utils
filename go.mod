@@ -10,6 +10,7 @@ require (
 	github.com/go-playground/validator/v10 v10.30.3
 	github.com/mileusna/useragent v1.3.5
 	github.com/redis/go-redis/v9 v9.21.0
+	github.com/resend/resend-go/v3 v3.12.0
 	github.com/spf13/viper v1.21.0
 	go.mongodb.org/mongo-driver/v2 v2.8.0
 	go.uber.org/zap v1.28.0

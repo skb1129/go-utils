@@ -36,10 +36,10 @@ func (c *Resend) SendEmails(templateID string, toEmails []string, dataList []map
 			if dataIdx < len(dataList) {
 				data = dataList[dataIdx]
 			}
-			batchReqs = append(batchReqs, &resend.SendEmailRequest{
+			batchReqs[j] = &resend.SendEmailRequest{
 				To:       []string{email},
 				Template: &resend.EmailTemplate{Id: templateID, Variables: data},
-			})
+			}
 		}
 		result, err := c.client.Batch.Send(batchReqs)
 		if err != nil {
